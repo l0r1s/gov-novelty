@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas,
+    monospace;
+
+  --color-ink: #0a0a0a;
+  --color-ink-2: #2a2a2a;
+  --color-ink-3: #555555;
+  --color-muted: #8a8a8a;
+  --color-line: #e7e7e7;
+  --color-line-2: #ededed;
+  --color-soft: #f5f5f5;
+  --color-paper: #fafafa;
+  --color-canvas: #ffffff;
+
+  --color-approve: #16a34a;
+  --color-approve-bg: #f0fdf4;
+  --color-approve-line: #bbf7d0;
+  --color-reject: #dc2626;
+  --color-reject-bg: #fef2f2;
+  --color-reject-line: #fecaca;
+  --color-focus: #2563eb;
+  --color-focus-bg: #eff6ff;
+  --color-focus-line: #bfdbfe;
+  --color-accent: #d97706;
+  --color-accent-bg: #fffbeb;
+  --color-accent-line: #fde68a;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    color: var(--color-ink);
+    background: var(--color-canvas);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+    letter-spacing: -0.015em;
+  }
+}
+
+@layer utilities {
+  .grid-bg {
+    background-image: linear-gradient(
+        to right,
+        var(--color-line-2) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, var(--color-line-2) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .dot-bg {
+    background-image: radial-gradient(
+      var(--color-line) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* xyflow overrides to fit the mono palette */
+.react-flow__edge-path {
+  stroke: var(--color-ink-3) !important;
+}
+.react-flow__node {
+  font-family: var(--font-sans);
+}
+.react-flow__attribution {
+  display: none !important;
+}
