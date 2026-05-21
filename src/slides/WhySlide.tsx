@@ -1,5 +1,6 @@
 import { SlideShell } from "@/components/SlideShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { CheckCircle2, Clock, Eye } from "lucide-react";
 
 export function WhySlide() {
@@ -37,13 +38,6 @@ export function WhySlide() {
           accent="approve"
         />
       </div>
-
-      <footer className="mt-6 border-t border-line pt-5">
-        <p className="max-w-3xl text-[13px] leading-relaxed text-ink-3">
-          Two tracks instead of fifteen. A small committee for speed, plus a broad assembly for
-          legitimacy. No conviction voting; no delegated nominators.
-        </p>
-      </footer>
     </SlideShell>
   );
 }
@@ -67,12 +61,24 @@ function PrincipleCard({
       : accent === "focus"
         ? "bg-focus"
         : "bg-approve";
+  const iconTone =
+    accent === "ink"
+      ? "border-line bg-ink text-canvas"
+      : accent === "focus"
+        ? "border-focus-line bg-focus-bg text-focus"
+        : "border-approve-line bg-approve-bg text-approve";
+
   return (
     <Card className="relative overflow-hidden">
       <div className={`absolute inset-x-0 top-0 h-1 ${accentLine}`} />
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="rounded border border-line bg-soft p-2 text-ink-2">
+          <div
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded border",
+              iconTone,
+            )}
+          >
             {icon}
           </div>
           <span className="text-[10px] uppercase tracking-[0.22em] text-ink-3">

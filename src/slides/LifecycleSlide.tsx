@@ -72,12 +72,13 @@ export function LifecycleSlide() {
         </>
       }
       subtitle="Cast votes on either track, advance the clock, or let it run. The state machine — submission → Triumvirate → Review → enactment — is exactly what runs on-chain."
+      className="gap-5 overflow-hidden pt-8 pb-4"
     >
-      <div className="flex flex-1 min-h-0 gap-5">
+      <div className="flex flex-1 min-h-0 gap-5 overflow-hidden">
         {/* Left column: tracks */}
-        <div className="flex flex-1 flex-col gap-4 min-w-0">
+        <div className="flex flex-1 min-w-0 flex-col gap-4 overflow-hidden">
           <ProposalHeader phase={state.phase} />
-          <div className="grid flex-1 grid-cols-2 gap-4 min-h-0">
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-4 overflow-hidden">
             <Track0Panel
               voters={state.triumvirate}
               phase={state.phase}
@@ -105,7 +106,7 @@ export function LifecycleSlide() {
         </div>
 
         {/* Right column: controls + timeline */}
-        <aside className="flex w-[280px] shrink-0 flex-col gap-4 min-h-0">
+        <aside className="flex min-h-0 w-[280px] shrink-0 flex-col gap-4 overflow-hidden">
           <Controls
             phase={state.phase}
             autoplay={autoplay}
@@ -198,7 +199,7 @@ function Track0Panel({
   return (
     <Card
       className={cn(
-        "flex flex-col p-5 transition-opacity",
+        "flex min-h-0 flex-col overflow-hidden p-5 transition-opacity",
         !active && !done && "opacity-60",
         done && phase !== "track0_rejected" && phase !== "track0_expired" && "opacity-80",
       )}
@@ -350,7 +351,7 @@ function Track1Panel({
   return (
     <Card
       className={cn(
-        "flex flex-col p-5 transition-opacity",
+        "flex min-h-0 flex-col overflow-hidden p-5 transition-opacity",
         !reachedT0 && "opacity-40",
       )}
     >
@@ -392,6 +393,7 @@ function Track1Panel({
         <BulkBtn label="+24 aye" tone="approve" disabled={!active} onClick={() => onBulk(24, 0)} />
         <span className="mx-1 text-[10px] text-ink-3">/</span>
         <BulkBtn label="+5 nay" tone="reject" disabled={!active} onClick={() => onBulk(0, 5)} />
+        <BulkBtn label="+12 nay" tone="reject" disabled={!active} onClick={() => onBulk(0, 12)} />
         <BulkBtn label="+17 nay" tone="reject" disabled={!active} onClick={() => onBulk(0, 17)} />
         <span className="mx-1 text-[10px] text-ink-3">/</span>
         <BulkBtn label="clear" tone="muted" disabled={!active} onClick={() => onBulk(0, 0)} />
@@ -722,8 +724,16 @@ function Timeline({
   phase: Phase;
   events: SimEvent[];
 }) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [events.length]);
+
   return (
-    <Card className="flex flex-1 min-h-0 flex-col p-4">
+    <Card className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
       <div className="flex items-center justify-between">
         <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
           Event log
@@ -732,13 +742,13 @@ function Timeline({
           {phaseLabel(phase)}
         </Badge>
       </div>
-      <div className="mt-3 flex-1 min-h-0 overflow-auto pr-1">
+      <div ref={scrollRef} className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
         {events.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center text-[12px] text-ink-3">
             Submit the proposal to begin.
           </div>
         ) : (
-          <ol className="space-y-2">
+          <ol className="space-y-1.5">
             <AnimatePresence initial={false}>
               {events.map((e) => (
                 <motion.li
@@ -746,10 +756,10 @@ function Timeline({
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.18 }}
-                  className="flex items-start gap-2 text-[11.5px]"
+                  className="flex items-start gap-2 text-[11px] leading-snug"
                 >
                   <EventDot kind={e.kind} />
-                  <span className="text-ink-2">{e.text}</span>
+                  <span className="min-w-0 text-ink-2">{e.text}</span>
                 </motion.li>
               ))}
             </AnimatePresence>
@@ -786,4 +796,3 @@ function EventDot({ kind }: { kind: string }) {
     </span>
   );
 }
-

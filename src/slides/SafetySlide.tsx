@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   Trash2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function SafetySlide() {
   return (
@@ -19,50 +20,57 @@ export function SafetySlide() {
           <span className="text-ink-3">do most of the safety work.</span>
         </>
       }
-      subtitle="Each constraint targets a concrete failure mode. Together they put a hard cap on the blast radius of a single compromised key, a buggy proposal, or a partisan rotation."
+      subtitle="Small constraints cap the blast radius of bad keys, bad calls, and mid-vote rotations."
+      className="gap-5"
     >
-      <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 pt-1">
+      <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-4">
         <SafetyCard
           icon={<Camera className="h-4 w-4" />}
+          tone="focus"
           tag="snapshot voting"
-          title="Voter set is frozen at submission."
-          body="When a referendum opens, the eligible voter list is snapshotted and sorted. Later rotations can't add new voters to live polls or strip rights from voters who already cast."
-          example="A 60-day rotation in the middle of a 7-day Triumvirate decision changes nothing for that referendum."
+          title="Frozen voter set"
+          body="Eligible voters are snapshotted when the referendum opens."
+          example="Later rotations cannot change a live poll."
         />
         <SafetyCard
           icon={<Lock className="h-4 w-4" />}
+          tone="ink"
           tag="no back door"
-          title="Track 1 has no proposer set."
-          body="The only way to land a root call in the 24-hour Review delay is through Triumvirate approval. No direct submission. No shortcut."
-          example="A compromised Proposer key still has to convince two of three Triumvirate members."
+          title="Track 1 is not submittable"
+          body="Review is only reached through Triumvirate approval."
+          example="A Proposer key cannot bypass track 0."
         />
         <SafetyCard
           icon={<Gauge className="h-4 w-4" />}
+          tone="accent"
           tag="quotas"
-          title="Hard caps on the queue."
-          body="A maximum of 20 active referenda system-wide, and 5 per single proposer. The chain rejects new submissions over those limits."
-          example="A compromised proposer key can hold at most 5 of the 20 queue slots."
+          title="Queue caps"
+          body="20 active referenda total; 5 per proposer."
+          example="A single key cannot fill the queue."
         />
         <SafetyCard
           icon={<ShieldAlert className="h-4 w-4" />}
+          tone="approve"
           tag="atomic dispatch"
-          title="One block, one outcome."
-          body="The chain wraps the governed call in a dispatch envelope that marks the referendum enacted in the same step that runs the call. Dispatch and bookkeeping land together."
-          example="A stale envelope can never run the call twice."
+          title="Atomic dispatch"
+          body="Execution and referendum bookkeeping land together."
+          example="No stale envelope can run twice."
         />
         <SafetyCard
           icon={<ShieldAlert className="h-4 w-4" />}
+          tone="reject"
           tag="emergency stop"
-          title="Governance can kill anything before dispatch."
-          body="An emergency stop terminates an active, approved, or fast-tracked referendum and cancels its scheduled dispatch. There is no proposer-cancel — emergency stop is the only stop button."
-          example="A circuit breaker for catastrophic mistakes, gated by governance itself."
+          title="Governance kill"
+          body="Active or scheduled referenda can be terminated before dispatch."
+          example="No proposer-cancel path."
         />
         <SafetyCard
           icon={<Trash2 className="h-4 w-4" />}
+          tone="muted"
           tag="cleanup"
-          title="Vote storage is reclaimed lazily."
-          body="When a poll completes, the tally is removed immediately. Per-voter records drain in small chunks over the following blocks so cleanup never spikes block weight."
-          example="Storage hygiene, not correctness — backlogs leak bytes, not votes."
+          title="Chunked cleanup"
+          body="Tally clears immediately; voter records drain over idle blocks."
+          example="Cleanup cannot spike block weight."
         />
       </div>
     </SlideShell>
@@ -71,34 +79,44 @@ export function SafetySlide() {
 
 function SafetyCard({
   icon,
+  tone,
   tag,
   title,
   body,
   example,
 }: {
   icon: React.ReactNode;
+  tone: "ink" | "focus" | "approve" | "accent" | "reject" | "muted";
   tag: string;
   title: string;
   body: string;
   example: string;
 }) {
   return (
-    <Card className="flex flex-col p-5">
+    <Card className="flex min-h-0 flex-col p-4">
       <div className="flex items-center justify-between">
-        <div className="rounded border border-line bg-soft p-2 text-ink-2">
+        <div
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded border",
+            tone === "ink" && "border-line bg-ink text-canvas",
+            tone === "focus" && "border-focus-line bg-focus-bg text-focus",
+            tone === "approve" && "border-approve-line bg-approve-bg text-approve",
+            tone === "accent" && "border-accent-line bg-accent-bg text-accent",
+            tone === "reject" && "border-reject-line bg-reject-bg text-reject",
+            tone === "muted" && "border-line bg-soft text-ink-3",
+          )}
+        >
           {icon}
         </div>
         <Badge variant="outline" className="text-[10px]">
           {tag}
         </Badge>
       </div>
-      <h3 className="mt-3 text-[15px] font-semibold leading-snug">{title}</h3>
-      <p className="mt-2 text-[12.5px] leading-relaxed text-ink-2">{body}</p>
-      <div className="mt-auto pt-3">
-        <div className="rounded border border-dashed border-line bg-soft/50 p-2.5 text-[11px] leading-relaxed text-ink-3">
-          <span className="font-medium text-ink-2">e.g.</span> {example}
-        </div>
-      </div>
+      <h3 className="mt-3 text-[14px] font-semibold leading-snug">{title}</h3>
+      <p className="mt-2 text-[12px] leading-snug text-ink-2">{body}</p>
+      <p className="mt-auto pt-3 text-[11.5px] leading-snug text-ink-3">
+        <span className="font-medium text-ink-2">e.g.</span> {example}
+      </p>
     </Card>
   );
 }

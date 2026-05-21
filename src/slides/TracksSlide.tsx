@@ -17,8 +17,9 @@ export function TracksSlide() {
         </>
       }
       subtitle="Every proposal enters through Track 0. Approval there is the only way to reach Track 1. There is no other on-chain entry point into the review delay."
+      className="gap-5 overflow-hidden pt-7 pb-4"
     >
-      <div className="relative flex flex-1 min-h-0 items-stretch gap-6 pt-1">
+      <div className="relative flex flex-1 min-h-0 items-stretch gap-6">
         <div className="flex flex-1 flex-col min-w-0">
           <TrackCard track={TRACKS[0]} side="left" />
         </div>
@@ -30,21 +31,21 @@ export function TracksSlide() {
         </div>
       </div>
 
-      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
+      <footer className="mt-4 grid grid-cols-3 gap-5 border-t border-line pt-3 text-[12.5px] leading-snug text-ink-3">
         <Note
           icon={<Lock className="h-3.5 w-3.5" />}
           title="No back door"
-          body="Track 1 has no submission entry point. The only way a call reaches the 24-hour delay is through Triumvirate approval on Track 0."
+          body="Track 1 is reached only by Track 0 approval."
         />
         <Note
           icon={<Users2 className="h-3.5 w-3.5" />}
           title="Voter set is frozen"
-          body="When a referendum opens, the eligible voter list is snapshotted. Later rotations don't affect ongoing polls."
+          body="Opening a referendum snapshots eligible voters."
         />
         <Note
           icon={<Gavel className="h-3.5 w-3.5" />}
           title="Only governance can stop it"
-          body="There is no proposer-cancel. Once a proposal is in flight, only an emergency stop from governance itself can terminate it."
+          body="No proposer-cancel after submission."
         />
       </footer>
     </SlideShell>
@@ -66,7 +67,7 @@ function TrackCard({ track, side }: { track: TrackSpec; side: "left" | "right" }
           isStage0 ? "bg-ink" : "bg-focus",
         )}
       />
-      <CardContent className="p-6 pt-7">
+      <CardContent className="p-5 pt-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -80,16 +81,13 @@ function TrackCard({ track, side }: { track: TrackSpec; side: "left" | "right" }
             <h3 className="mt-2 text-[22px] font-semibold tracking-tight">
               {track.name}
             </h3>
-            <p className="mt-1 min-h-[40px] text-[12.5px] leading-relaxed text-ink-3">
-              {track.description}
-            </p>
           </div>
           <div className="text-right text-[10px] uppercase tracking-[0.18em] text-ink-3">
             <p>{side === "left" ? "decides" : "reviews"}</p>
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <Separator className="my-3" />
 
         <div className="grid grid-cols-2 gap-3">
           <Field
@@ -108,19 +106,43 @@ function TrackCard({ track, side }: { track: TrackSpec; side: "left" | "right" }
           />
         </div>
 
-        <div className="mt-3 space-y-1.5 rounded-md border border-line bg-soft p-3">
-          {track.details.map((d) => (
-            <div
-              key={d.label}
-              className="flex items-baseline justify-between gap-3 text-[12px]"
-            >
-              <span className="text-ink-3">{d.label}</span>
-              <span className="font-medium text-ink">{d.value}</span>
-            </div>
-          ))}
-        </div>
+        <DetailRows track={track} />
       </CardContent>
     </Card>
+  );
+}
+
+function DetailRows({ track }: { track: TrackSpec }) {
+  const isStage0 = track.id === 0;
+
+  return (
+    <dl className="mt-3 overflow-hidden rounded-md border border-line bg-canvas">
+      {track.details.map((d, index) => (
+        <div
+          key={d.label}
+          className={cn(
+            "grid min-h-9 grid-cols-[minmax(120px,0.38fr)_1fr] items-center gap-4 px-3 py-2 text-[12px]",
+            index > 0 && "border-t border-line",
+          )}
+        >
+          <dt className="text-ink-3">{d.label}</dt>
+          <dd className="flex justify-end text-right">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-sm border bg-soft px-2 py-1 font-medium leading-none text-ink",
+                (d.label === "Approve threshold" || d.label === "Fast-track at") &&
+                  "border-approve-line bg-approve-bg text-approve",
+                (d.label === "Reject threshold" || d.label === "Cancel at") &&
+                  "border-reject-line bg-reject-bg text-reject",
+                isStage0 && d.label === "On approval" && "border-ink bg-ink text-canvas",
+              )}
+            >
+              {d.value}
+            </span>
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -155,13 +177,7 @@ function Field({
 function ApprovalArrow() {
   return (
     <div className="flex flex-col items-center gap-2 px-2">
-      <div className="rounded-md border border-line bg-canvas px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-3">
-        on approval
-      </div>
       <ArrowRight className="h-5 w-5 text-ink" strokeWidth={1.5} />
-      <div className="rounded-md border border-line bg-canvas px-2 py-1 text-center text-[10px] uppercase tracking-[0.18em] text-ink-3">
-        hand off
-      </div>
     </div>
   );
 }
@@ -176,12 +192,12 @@ function Note({
   body: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-3">
-      <div className="mt-0.5 rounded border border-line bg-soft p-1.5 text-ink-2">
+    <div className="flex items-start gap-2.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-line bg-soft text-ink-2">
         {icon}
       </div>
       <div>
-        <p className="font-medium text-ink">{title}</p>
+        <p className="mb-0.5 font-medium leading-none text-ink">{title}</p>
         <p>{body}</p>
       </div>
     </div>

@@ -23,14 +23,18 @@ import {
 import { fmtHours } from "@/lib/utils";
 
 const REVIEW_TOTAL = 32;
+const FAST_TRACK_VOTES = Math.ceil(REVIEW_FAST_TRACK_THRESHOLD * REVIEW_TOTAL);
+const CANCEL_VOTES = Math.ceil(REVIEW_CANCEL_THRESHOLD * REVIEW_TOTAL);
 
 export function CurveSlide() {
   const [aye, setAye] = React.useState(0);
   const [nay, setNay] = React.useState(0);
 
   // Clamp so aye+nay never exceeds total.
-  const setAyeClamped = (v: number) => setAye(Math.min(v, REVIEW_TOTAL - nay));
-  const setNayClamped = (v: number) => setNay(Math.min(v, REVIEW_TOTAL - aye));
+  const setAyeClamped = (v: number) =>
+    setAye(Math.min(v, FAST_TRACK_VOTES, REVIEW_TOTAL - nay));
+  const setNayClamped = (v: number) =>
+    setNay(Math.min(v, CANCEL_VOTES, REVIEW_TOTAL - aye));
 
   const ayeFrac = aye / REVIEW_TOTAL;
   const nayFrac = nay / REVIEW_TOTAL;
@@ -47,8 +51,8 @@ export function CurveSlide() {
         : mode === "neutral"
           ? "no net vote → delay stays at the initial 24h"
           : mode === "approving"
-            ? "delay = 24h × (1 − net approval / 75%)"
-            : "delay = 24h + (net rejection / 51%) × 24h";
+            ? "ease-out progress = 1 − (1 − net approval / 75%)³"
+            : "ease-out progress = 1 − (1 − net rejection / 51%)³";
 
   return (
     <SlideShell
@@ -59,19 +63,19 @@ export function CurveSlide() {
           <span className="text-ink-3">They slide the dispatch time.</span>
         </>
       }
-      subtitle="Each net vote in the Review track moves the scheduled dispatch by the same amount: net approval pulls it toward now, net rejection pushes it toward the 48-hour cap. Reach 75% and it fires next block. Reach 51% nay and it's cancelled."
+      subtitle="Review votes move dispatch along an ease-out curve: early net votes move time quickly, then the curve flattens near the threshold."
+      className="gap-5 overflow-hidden pt-8 pb-4"
     >
-      <div className="grid flex-1 grid-cols-[1.4fr_1fr] gap-5 pt-1">
+      <div className="grid min-h-0 flex-1 grid-cols-[1.4fr_1fr] gap-5 overflow-hidden">
         {/* Chart */}
-        <Card className="flex flex-col p-5">
+        <Card className="flex min-h-0 flex-col overflow-hidden p-5">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
                 Net votes → dispatch delay
               </div>
               <div className="mt-1 text-[13px] text-ink-2">
-                Linear interpolation between the cancel and fast-track
-                thresholds.
+                Ease-out between the cancel and fast-track thresholds.
               </div>
             </div>
             <div className="flex flex-col items-end text-right">
@@ -100,11 +104,11 @@ export function CurveSlide() {
             </div>
           </div>
 
-          <div className="mt-4 flex-1">
+          <div className="mt-3 min-h-0 flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
-                margin={{ top: 12, right: 18, bottom: 28, left: 8 }}
+                margin={{ top: 10, right: 18, bottom: 24, left: 8 }}
               >
                 <ReferenceArea
                   x1={-REVIEW_CANCEL_THRESHOLD}
@@ -204,13 +208,13 @@ export function CurveSlide() {
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-3 rounded-md border border-line bg-soft px-3 py-2 font-mono text-[11px] text-ink-2">
+          <div className="shrink-0 border-t border-line pt-2 font-mono text-[11px] leading-none text-ink-3">
             {formula}
           </div>
         </Card>
 
         {/* Controls */}
-        <Card className="flex flex-col gap-5 p-5">
+        <Card className="flex min-h-0 flex-col gap-4 overflow-hidden p-5">
           <div>
             <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
               Simulate Review tally
@@ -228,6 +232,7 @@ export function CurveSlide() {
             frac={ayeFrac}
             threshold={REVIEW_FAST_TRACK_THRESHOLD}
             thresholdLabel="75% to fast-track"
+            max={Math.min(FAST_TRACK_VOTES, REVIEW_TOTAL - nay)}
           />
           <SliderRow
             label="Nay votes"
@@ -237,13 +242,14 @@ export function CurveSlide() {
             frac={nayFrac}
             threshold={REVIEW_CANCEL_THRESHOLD}
             thresholdLabel="51% to cancel"
+            max={Math.min(CANCEL_VOTES, REVIEW_TOTAL - aye)}
           />
 
-          <div className="mt-auto rounded-md border border-line bg-soft p-3">
+          <div className="mt-auto border-t border-line pt-4">
             <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
               Outcome at this tally
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-2 text-[12px]">
+            <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3 text-[12px]">
               <KV label="Net" value={`${Math.round(currentNetFrac * 100)}%`} />
               <KV
                 label="Delay"
@@ -256,22 +262,10 @@ export function CurveSlide() {
         </Card>
       </div>
 
-      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
-        <p>
-          <span className="font-medium text-ink">The curve is pluggable.</span>{" "}
-          The shape of the curve is a single runtime knob. Swapping linear for
-          sigmoid or conviction-weighted progress is a one-line change.
-        </p>
-        <p>
-          <span className="font-medium text-ink">Live polls keep their rules.</span>{" "}
-          Track thresholds are snapshotted into each referendum when it's
-          submitted, so a runtime upgrade can't move the goal posts mid-vote.
-        </p>
-        <p>
-          <span className="font-medium text-ink">Cancel beats fast-track.</span>{" "}
-          The 75% fast-track and 51% cancel thresholds are deliberately set so
-          the two zones can never overlap on a single tally.
-        </p>
+      <footer className="mt-4 grid grid-cols-3 gap-5 border-t border-line pt-3 text-[12.5px] leading-snug text-ink-3">
+        <Note title="Pluggable curve" body="The runtime chooses the curve shape." />
+        <Note title="Rules snapshotted" body="Existing polls keep their thresholds." />
+        <Note title="No overlap" body="51% cancel and 75% fast-track cannot both hold." />
       </footer>
     </SlideShell>
   );
@@ -285,6 +279,7 @@ function SliderRow({
   frac,
   threshold,
   thresholdLabel,
+  max,
 }: {
   label: string;
   value: number;
@@ -293,6 +288,7 @@ function SliderRow({
   frac: number;
   threshold: number;
   thresholdLabel: string;
+  max: number;
 }) {
   const reached = frac >= threshold;
   return (
@@ -308,7 +304,7 @@ function SliderRow({
         value={[value]}
         onValueChange={([v]) => onChange(v)}
         min={0}
-        max={REVIEW_TOTAL}
+        max={max}
         step={1}
         className="mt-2"
       />
@@ -341,6 +337,15 @@ function KV({ label, value }: { label: string; value: string }) {
       </div>
       <div className="font-mono text-[13px] text-ink">{value}</div>
     </div>
+  );
+}
+
+function Note({ title, body }: { title: string; body: string }) {
+  return (
+    <p>
+      <span className="font-medium text-ink">{title}.</span>{" "}
+      <span className="text-ink-3">{body}</span>
+    </p>
   );
 }
 

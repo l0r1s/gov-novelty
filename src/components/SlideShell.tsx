@@ -19,9 +19,14 @@ export function SlideShell({
   bare = false,
 }: SlideShellProps) {
   return (
-    <section className={cn("flex flex-1 flex-col gap-7 px-12 pt-10 pb-6", className)}>
+    <section
+      className={cn(
+        "flex min-h-0 flex-1 flex-col gap-6 overflow-hidden px-12 pt-8 pb-4",
+        className,
+      )}
+    >
       {!bare && (
-        <header className="flex flex-col gap-2">
+        <header className="flex shrink-0 flex-col gap-2">
           <div className="flex items-center gap-3 text-xs uppercase tracking-[0.22em] text-ink-3">
             <span className="h-px w-8 bg-ink-3" />
             <span>{eyebrow}</span>
@@ -36,7 +41,7 @@ export function SlideShell({
           )}
         </header>
       )}
-      <div className="flex flex-1 min-h-0 flex-col">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
     </section>
   );
 }

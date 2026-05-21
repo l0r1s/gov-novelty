@@ -57,9 +57,8 @@ export const COLLECTIVES: CollectiveSpec[] = [
     memberSummary: "up to 20",
     termDays: null,
     role: "Submit proposals",
-    tagline: "Authorized to file proposals on the Triumvirate track.",
-    selection:
-      "Curated. Held by the Open Tensor Foundation today; membership is set by governance itself.",
+    tagline: "Files proposals on track 0.",
+    selection: "Curated by governance; currently OTF-held.",
   },
   {
     id: "Triumvirate",
@@ -69,8 +68,8 @@ export const COLLECTIVES: CollectiveSpec[] = [
     memberSummary: "3",
     termDays: null,
     role: "First-stage approval body",
-    tagline: "Three-member committee that approves or rejects proposals.",
-    selection: "Curated. Three named seats, later elected via on-chain voting.",
+    tagline: "Approves or rejects track 0 proposals.",
+    selection: "Curated today; can move to on-chain election.",
   },
   {
     id: "Economic",
@@ -79,10 +78,9 @@ export const COLLECTIVES: CollectiveSpec[] = [
     max: 16,
     memberSummary: "16",
     termDays: 60,
-    role: "Validator-side review voter",
-    tagline: "Top 16 root-registered validator coldkeys by smoothed stake value.",
-    selection:
-      "Selected automatically every 60 days from EconomicEligible, ranked by EMA of (liquid TAO + alpha value).",
+    role: "Validator review voter",
+    tagline: "Top 16 root-registered validator coldkeys.",
+    selection: "Rotates every 60d by EMA stake value.",
   },
   {
     id: "Building",
@@ -91,10 +89,9 @@ export const COLLECTIVES: CollectiveSpec[] = [
     max: 16,
     memberSummary: "16",
     termDays: 60,
-    role: "Builder-side review voter",
-    tagline: "Top 16 subnet-owner coldkeys, weighted by their best mature subnet.",
-    selection:
-      "Selected automatically every 60 days from owners of subnets older than 180 days, ranked by best moving subnet price.",
+    role: "Builder review voter",
+    tagline: "Top 16 mature subnet-owner coldkeys.",
+    selection: "Rotates every 60d by best subnet price.",
   },
   {
     id: "EconomicEligible",
@@ -104,9 +101,8 @@ export const COLLECTIVES: CollectiveSpec[] = [
     memberSummary: "root-registered",
     termDays: null,
     role: "Staging pool",
-    tagline: "Mirror of coldkeys with at least one root-registered hotkey.",
-    selection:
-      "Synced automatically from root registration. No voting role.",
+    tagline: "Coldkeys with a root-registered hotkey.",
+    selection: "Auto-synced staging pool; no voting role.",
   },
 ];
 
@@ -153,10 +149,14 @@ export const TRACKS: TrackSpec[] = [
   },
 ];
 
-// Adjustable delay curve, mirrored from runtime/src/governance/tracks.rs
-// (`LinearAdjustmentCurve`).  The pallet-side math lives in
-// pallets/referenda; the runtime currently passes net progress straight
-// through, so the mapping is identity.
+// Adjustable delay curve used by the Review track visualization and
+// simulator. Progress is normalized against the relevant threshold, then
+// mapped through an ease-out curve: 1 - (1 - p)^3.
+function easeOutCubic(progress: number) {
+  const p = Math.max(0, Math.min(1, progress));
+  return 1 - (1 - p) ** 3;
+}
+
 export function computeDelayHours(input: {
   approveFrac: number;
   rejectFrac: number;
@@ -177,7 +177,7 @@ export function computeDelayHours(input: {
   if (rejectFrac >= cancelThreshold) return { hours: maxHours, mode: "cancel" };
   if (approveFrac >= rejectFrac) {
     const net = approveFrac - rejectFrac;
-    const progress = Math.min(1, net / fastTrackThreshold);
+    const progress = easeOutCubic(net / fastTrackThreshold);
     const hours = initialHours * (1 - progress);
     return {
       hours,
@@ -185,7 +185,7 @@ export function computeDelayHours(input: {
     };
   } else {
     const net = rejectFrac - approveFrac;
-    const progress = Math.min(1, net / cancelThreshold);
+    const progress = easeOutCubic(net / cancelThreshold);
     const hours = initialHours + progress * (maxHours - initialHours);
     return { hours, mode: "delaying" };
   }

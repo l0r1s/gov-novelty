@@ -43,6 +43,7 @@
     color: var(--color-ink);
     background: var(--color-canvas);
     font-family: var(--font-sans);
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;

@@ -284,13 +284,23 @@ export function reducer(state: SimState, action: Action): SimState {
     }
     case "vote_review_bulk": {
       if (state.phase !== "review_ongoing") return state;
-      const reviewVoters = state.reviewVoters.map((v) => ({
-        ...v,
-        vote: null as Vote,
-      }));
+      if (action.aye === 0 && action.nay === 0) {
+        const reviewVoters = state.reviewVoters.map((v) => ({
+          ...v,
+          vote: null as Vote,
+        }));
+        return recomputeDelay({
+          ...state,
+          reviewVoters,
+          events: [...state.events, ev("vote", "review", "Review votes cleared")],
+        });
+      }
+
+      const reviewVoters = state.reviewVoters.map((v) => ({ ...v }));
       let ayeAssigned = 0;
       let nayAssigned = 0;
       for (let i = 0; i < reviewVoters.length; i++) {
+        if (reviewVoters[i].vote !== null) continue;
         if (ayeAssigned < action.aye) {
           reviewVoters[i] = { ...reviewVoters[i], vote: "aye" };
           ayeAssigned++;
@@ -304,7 +314,11 @@ export function reducer(state: SimState, action: Action): SimState {
         reviewVoters,
         events: [
           ...state.events,
-          ev("vote", "review", `${action.aye} aye / ${action.nay} nay cast`),
+          ev(
+            "vote",
+            "review",
+            `${ayeAssigned} aye / ${nayAssigned} nay added`,
+          ),
         ],
       });
       return maybeAdvancePhase(next);

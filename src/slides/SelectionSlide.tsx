@@ -19,21 +19,21 @@ export function SelectionSlide() {
           <span className="text-ink-3">aren't appointed. They're computed.</span>
         </>
       }
-      subtitle="Every 60 days the runtime rotates Economic and Building seats from on-chain metrics. No off-chain process, no committee selection, no signaling vote."
+      subtitle="Every 60 days the runtime rotates Economic and Building seats from on-chain metrics. No off-chain committee selection."
+      className="gap-5"
     >
-      <div className="grid flex-1 grid-cols-2 gap-5 pt-1">
+      <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
         <RotationCard
           tone="focus"
           icon={<TrendingUp className="h-4 w-4" />}
           collective="Economic"
-          summary="Top 16 root-registered validator coldkeys, ranked by smoothed stake value."
+          summary="Top 16 root-registered validator coldkeys by smoothed stake value."
           steps={[
             {
               title: "Eligibility pool",
               body: (
                 <>
-                  The chain tracks every coldkey with at least one root-registered
-                  hotkey. Capped at 64 — the same upper bound as the root subnet.
+                  Coldkeys with at least one root-registered hotkey; capped at 64.
                 </>
               ),
             },
@@ -41,40 +41,25 @@ export function SelectionSlide() {
               title: "Sample value",
               body: (
                 <>
-                  Each block, every eligible coldkey gets a fresh sample:{" "}
-                  <span className="text-ink">
-                    liquid TAO + the TAO value of alpha across their hotkeys
-                  </span>
-                  .
+                  Each block samples <span className="text-ink">liquid TAO + alpha value</span>.
                 </>
               ),
             },
             {
               title: "Smoothing",
-              body: (
-                <>
-                  Samples blend into an exponential moving average. A one-block
-                  balance spike can't buy a seat.
-                </>
-              ),
+              body: <>EMA dampens one-block balance spikes.</>,
             },
             {
               title: "Warmup gate",
               body: (
                 <>
-                  A coldkey needs roughly{" "}
-                  <span className="text-ink">30 days</span> of samples before it
-                  can be ranked.
+                  Roughly <span className="text-ink">30 days</span> of samples before ranking.
                 </>
               ),
             },
             {
               title: "Selection",
-              body: (
-                <>
-                  Sort eligible coldkeys by smoothed value, take the top 16.
-                </>
-              ),
+              body: <>Sort by EMA value; take the top 16.</>,
             },
           ]}
         />
@@ -82,15 +67,13 @@ export function SelectionSlide() {
           tone="accent"
           icon={<Building2 className="h-4 w-4" />}
           collective="Building"
-          summary="Top 16 subnet-owner coldkeys, ranked by their best mature subnet."
+          summary="Top 16 subnet-owner coldkeys by best mature subnet."
           steps={[
             {
               title: "Maturity filter",
               body: (
                 <>
-                  Iterate all subnets, skip any younger than{" "}
-                  <span className="text-ink">180 days</span>. A new subnet can't
-                  vote on its own launch.
+                  Skip subnets younger than <span className="text-ink">180 days</span>.
                 </>
               ),
             },
@@ -98,53 +81,40 @@ export function SelectionSlide() {
               title: "Owner scoring",
               body: (
                 <>
-                  For each mature subnet, read its moving price and the owning
-                  coldkey. An owner's score is the{" "}
-                  <span className="text-ink">max</span> across all subnets they
-                  own — multiple subnets don't stack.
+                  Score each owner by their <span className="text-ink">best</span> mature subnet price.
                 </>
               ),
             },
             {
               title: "One owner, one seat",
-              body: (
-                <>
-                  Sort owners by best-price descending. Take the top 16. An owner
-                  with three high-priced subnets still gets one seat.
-                </>
-              ),
+              body: <>Multiple high-priced subnets do not stack.</>,
             },
             {
               title: "No staging pool",
-              body: (
-                <>
-                  Unlike Economic, no eligibility list. The full set of mature
-                  subnets is computed at rotation time.
-                </>
-              ),
+              body: <>Computed fresh at rotation time.</>,
             },
           ]}
         />
       </div>
 
-      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
+      <footer className="mt-4 grid grid-cols-3 gap-5 border-t border-line pt-3 text-[12.5px] leading-snug text-ink-3">
         <FooterStat
           icon={<Calendar className="h-3.5 w-3.5" />}
           label="Rotation cadence"
           value="every 60 days"
-          detail="At the cadence boundary, the runtime recomputes both lists."
+          detail="Runtime recomputes both lists."
         />
         <FooterStat
           icon={<ListFilter className="h-3.5 w-3.5" />}
           label="Failure mode"
           value="keep previous set"
-          detail="If selection returns fewer than 16 eligible accounts, the existing membership stays untouched."
+          detail="If fewer than 16 qualify, keep the prior set."
         />
         <FooterStat
           icon={<TrendingUp className="h-3.5 w-3.5" />}
           label="Why both sides"
           value="validators + builders"
-          detail="Two independently-selected pools, unioned at review time. Neither side can pass a vote alone."
+          detail="Two pools unioned at review time."
         />
       </footer>
     </SlideShell>
@@ -165,13 +135,13 @@ function RotationCard({
   steps: { title: string; body: React.ReactNode }[];
 }) {
   return (
-    <Card className="relative flex flex-col overflow-hidden">
+    <Card className="relative flex min-h-0 flex-col overflow-hidden">
       <div
         className={`absolute inset-x-0 top-0 h-1 ${
           tone === "focus" ? "bg-focus" : "bg-accent"
         }`}
       />
-      <div className="p-5 pt-6">
+      <div className="p-4 pt-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div
@@ -187,7 +157,7 @@ function RotationCard({
               <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
                 Collective
               </div>
-              <h3 className="text-[18px] font-semibold tracking-tight">
+              <h3 className="text-[17px] font-semibold tracking-tight">
                 {collective}
               </h3>
             </div>
@@ -199,21 +169,21 @@ function RotationCard({
             16 seats, 60d
           </Badge>
         </div>
-        <p className="mt-3 text-[13px] text-ink-2">{summary}</p>
+        <p className="mt-2 text-[12.5px] leading-snug text-ink-2">{summary}</p>
       </div>
       <Separator />
       <ol className="flex flex-1 flex-col">
         {steps.map((s, i) => (
           <li
             key={s.title}
-            className="flex gap-3 border-b border-line px-5 py-3 last:border-0"
+            className="flex gap-3 border-b border-line px-4 py-2.5 last:border-0"
           >
             <div className="font-mono text-[11px] text-ink-3">
               {String(i + 1).padStart(2, "0")}
             </div>
             <div className="flex-1">
-              <div className="text-[12.5px] font-medium text-ink">{s.title}</div>
-              <div className="mt-0.5 text-[12px] leading-relaxed text-ink-3">
+              <div className="text-[12px] font-medium text-ink">{s.title}</div>
+              <div className="mt-0.5 text-[11.5px] leading-snug text-ink-3">
                 {s.body}
               </div>
             </div>
@@ -236,16 +206,16 @@ function FooterStat({
   detail: string;
 }) {
   return (
-    <div className="flex gap-3">
-      <div className="mt-0.5 rounded border border-line bg-soft p-1.5 text-ink-2">
+    <div className="flex items-start gap-2.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-line bg-soft text-ink-2">
         {icon}
       </div>
       <div>
         <div className="text-[10px] uppercase tracking-[0.22em] text-ink-3">
           {label}
         </div>
-        <div className="text-[13px] font-medium text-ink">{value}</div>
-        <p className="mt-1 text-[13px] leading-relaxed text-ink-3">{detail}</p>
+        <div className="text-[12.5px] font-medium text-ink">{value}</div>
+        <p className="mt-0.5 text-[12.5px] leading-snug text-ink-3">{detail}</p>
       </div>
     </div>
   );

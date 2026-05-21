@@ -9,49 +9,65 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const EXTENSIONS = [
+type Tone = "ink" | "focus" | "approve" | "accent" | "reject" | "muted";
+
+const EXTENSIONS: Array<{
+  icon: React.ReactNode;
+  tone: Tone;
+  type: string;
+  title: string;
+  body: string;
+  effort: string;
+}> = [
   {
     icon: <Plus className="h-4 w-4" />,
+    tone: "reject",
     type: "new track",
     title: "Emergency track",
-    body: "A pass-or-fail track with a shorter deadline and a smaller approve threshold for time-sensitive runtime patches. Lives next to the Triumvirate track — same shape, different parameters.",
-    effort: "Add one entry to the track table.",
+    body: "Shorter deadline and lower approval threshold for urgent patches.",
+    effort: "Track table entry.",
   },
   {
     icon: <Plus className="h-4 w-4" />,
+    tone: "focus",
     type: "new track",
     title: "Low-stakes track",
-    body: "A track with a wider proposer set — say, any registered subnet owner — for small parameter changes. Pair it with a lower max-delay and a higher cancel threshold so the assembly still has the final word.",
-    effort: "Add one entry and one proposer-set variant.",
+    body: "Wider proposer set for small parameter changes.",
+    effort: "Track plus proposer-set variant.",
   },
   {
     icon: <Users className="h-4 w-4" />,
+    tone: "approve",
     type: "new collective",
     title: "Delegator pool",
-    body: "Add a Delegators collective into the Review voter union. Rotation could be the top-N delegating coldkeys by smoothed alpha. No changes to the voting machinery itself.",
-    effort: "Add one collective id and a rotation rule.",
+    body: "Add Delegators to the Review voter union.",
+    effort: "Collective id plus rotation rule.",
   },
   {
     icon: <LineChart className="h-4 w-4" />,
+    tone: "accent",
     type: "new curve",
     title: "Sigmoid or conviction curve",
-    body: "Today the dispatch delay slides linearly with net votes. Swapping in a sigmoid (fewer marginal votes near the middle) or conviction-weighted progress (longer locks pull harder) is a one-implementation swap.",
-    effort: "Replace one curve implementation.",
+    body: "Swap ease-out delay for sigmoid or conviction-weighted progress.",
+    effort: "Curve implementation.",
   },
   {
     icon: <GitBranch className="h-4 w-4" />,
+    tone: "ink",
     type: "membership policy",
     title: "Weighted voting",
-    body: "Today every voter in the snapshot counts once. A future scheme could weight by stake at snapshot time. The voting backend takes weights through the same interface that already feeds it members.",
-    effort: "Return weights alongside members.",
+    body: "Weight snapshot voters by stake or another metric.",
+    effort: "Return weights with members.",
   },
   {
     icon: <Zap className="h-4 w-4" />,
+    tone: "muted",
     type: "new origin",
     title: "Replace sudo with governance",
-    body: "Most curated mutations — adding a Proposer, swapping a Triumvirate seat, forcing a rotation — are root-gated today. Replacing root with the governance pipeline itself closes the loop.",
-    effort: "Swap one origin everywhere root appears.",
+    body: "Route curated mutations through governance itself.",
+    effort: "Swap root origins.",
   },
 ];
 
@@ -67,20 +83,19 @@ export function ExtensionsSlide() {
           </span>
         </>
       }
-      subtitle="The voting machinery is generic. The current runtime picks a deliberate minimum. New tracks, collectives, curves, or weight schemes plug in without touching the underlying code."
+      subtitle="The runtime ships a minimum set, but the pallets accept new tracks, collectives, curves, and weights."
+      className="gap-5"
     >
-      <div className="grid flex-1 grid-cols-3 gap-4 pt-1">
+      <div className="grid min-h-0 flex-1 grid-cols-3 gap-4">
         {EXTENSIONS.map((e) => (
           <ExtensionCard key={e.title} {...e} />
         ))}
       </div>
 
-      <footer className="mt-6 flex items-center justify-between border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
+      <footer className="mt-4 flex items-center justify-between border-t border-line pt-3 text-[12.5px] leading-snug text-ink-3">
         <p className="max-w-3xl">
           <span className="font-medium text-ink">The shape is the API.</span>{" "}
-          A track is a name plus a proposer set, a voter set, and a decision
-          strategy. Anything fitting that shape is a track. Anything that can
-          enumerate members is a voter set.
+          A track is a proposer set, voter set, and decision strategy.
         </p>
         <Badge variant="outline" className="shrink-0">
           <ArrowUpRight className="h-3 w-3" />
@@ -93,32 +108,44 @@ export function ExtensionsSlide() {
 
 function ExtensionCard({
   icon,
+  tone,
   type,
   title,
   body,
   effort,
 }: {
   icon: React.ReactNode;
+  tone: Tone;
   type: string;
   title: string;
   body: string;
   effort: string;
 }) {
   return (
-    <Card className="flex flex-col p-5">
+    <Card className="flex min-h-0 flex-col p-4">
       <div className="flex items-center justify-between">
-        <div className="rounded border border-line bg-soft p-2 text-ink-2">
+        <div
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded border",
+            tone === "ink" && "border-line bg-ink text-canvas",
+            tone === "focus" && "border-focus-line bg-focus-bg text-focus",
+            tone === "approve" && "border-approve-line bg-approve-bg text-approve",
+            tone === "accent" && "border-accent-line bg-accent-bg text-accent",
+            tone === "reject" && "border-reject-line bg-reject-bg text-reject",
+            tone === "muted" && "border-line bg-soft text-ink-3",
+          )}
+        >
           {icon}
         </div>
         <Badge variant="outline" className="text-[10px]">
           {type}
         </Badge>
       </div>
-      <h3 className="mt-3 text-[15px] font-semibold leading-snug">{title}</h3>
-      <p className="mt-2 flex-1 text-[12.5px] leading-relaxed text-ink-2">
+      <h3 className="mt-3 text-[14px] font-semibold leading-snug">{title}</h3>
+      <p className="mt-2 flex-1 text-[12px] leading-snug text-ink-2">
         {body}
       </p>
-      <div className="mt-4 rounded border border-dashed border-line bg-soft/50 px-2.5 py-1.5 text-[11px] leading-snug text-ink-3">
+      <div className="mt-3 border-t border-line pt-2 text-[11px] leading-snug text-ink-3">
         <span className="font-medium text-ink-2">cost </span>
         {effort}
       </div>

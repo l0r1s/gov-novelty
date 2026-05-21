@@ -33,43 +33,42 @@ export function CollectivesSlide() {
           <span className="text-ink-3">Two roles. Two selection styles.</span>
         </>
       }
-      subtitle="Membership lives on-chain. Two collectives are curated by governance itself; two more rotate automatically based on on-chain merit; one is a staging pool that mirrors root registration."
+      subtitle="Membership is on-chain: Proposers and Triumvirate are curated; Economic and Building rotate; Economic eligible mirrors root registration."
+      className="gap-5 overflow-hidden pt-8 pb-4"
     >
-      <div className="grid flex-1 grid-cols-5 gap-4 pt-2">
+      <div className="grid flex-1 grid-cols-5 gap-3 pt-1">
         {COLLECTIVES.map((c) => (
           <CollectiveCard key={c.id} spec={c} />
         ))}
       </div>
 
-      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
+      <footer className="mt-4 grid grid-cols-3 gap-5 border-t border-line pt-3 text-[12.5px] leading-snug text-ink-3">
         <div>
-          <Badge variant="solid" className="mb-2">
+          <Badge variant="solid" className="mb-1.5">
             Submitting
           </Badge>
           <p>
-            Only members of <span className="text-ink">Proposers</span> can file
-            a new proposal — and only on track 0.
+            <span className="text-ink">Proposers</span> file new proposals on
+            track 0.
           </p>
         </div>
         <div>
-          <Badge variant="focus" className="mb-2">
+          <Badge variant="focus" className="mb-1.5">
             Deciding
           </Badge>
           <p>
-            <span className="text-ink">Triumvirate</span> votes pass-or-fail on
-            track 0. <span className="text-ink">Economic ∪ Building</span> votes
-            on the Review track 1.
+            <span className="text-ink">Triumvirate</span> decides track 0;{" "}
+            <span className="text-ink">Economic ∪ Building</span> reviews track 1.
           </p>
         </div>
         <div>
-          <Badge variant="accent" className="mb-2">
+          <Badge variant="accent" className="mb-1.5">
             Earning a seat
           </Badge>
           <p>
-            Curated collectives are set by governance.{" "}
             <span className="text-ink">Economic</span> and{" "}
-            <span className="text-ink">Building</span> rotate from on-chain
-            metrics every 60 days.
+            <span className="text-ink">Building</span> rotate every 60 days from
+            on-chain metrics.
           </p>
         </div>
       </footer>
@@ -83,7 +82,7 @@ function CollectiveCard({ spec }: { spec: CollectiveSpec }) {
   const isStaging = spec.id === "EconomicEligible";
   return (
     <Card className={cn("flex flex-col", isStaging && "border-dashed")}>
-      <CardHeader className="gap-2">
+      <CardHeader className="gap-2 p-4 pb-2.5">
         <div className="flex items-center justify-between">
           <span
             className={cn(
@@ -119,28 +118,26 @@ function CollectiveCard({ spec }: { spec: CollectiveSpec }) {
             </span>
           )}
         </div>
-        <div className="text-[11px] uppercase tracking-[0.18em] text-ink-3">
+        <div className="text-[10.5px] uppercase tracking-[0.16em] text-ink-3">
           {spec.role}
         </div>
       </CardHeader>
-      <CardContent className="flex-1 space-y-3 pt-0">
-        <div className="flex gap-2 text-[11px]">
-          <Stat label="Members" value={spec.memberSummary || `${spec.max}`} />
-        </div>
-        <p className="text-[12.5px] leading-relaxed text-ink-2">{spec.tagline}</p>
+      <CardContent className="flex-1 space-y-2.5 p-4 pt-0">
+        <Fact label="Members" value={spec.memberSummary || `${spec.max}`} />
+        <p className="text-[12.5px] leading-snug text-ink-2">{spec.tagline}</p>
         <p className="text-[11.5px] leading-snug text-ink-3">{spec.selection}</p>
       </CardContent>
     </Card>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function Fact({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded border border-line bg-soft px-2 py-1.5">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-ink-3">
-        {label}
-      </div>
-      <div className="font-mono text-[13px] text-ink">{value}</div>
+    <div className="flex items-center justify-between gap-3 border-y border-line py-2 text-[11.5px]">
+      <span className="text-ink-3">{label}</span>
+      <span className="inline-flex items-center rounded-sm border border-line bg-canvas px-2 py-1 font-mono text-[12px] leading-none text-ink">
+        {value}
+      </span>
     </div>
   );
 }

@@ -76,9 +76,9 @@ export function PresentationFrame({ slides }: PresentationFrameProps) {
   const current = slides[index];
 
   return (
-    <div className="flex h-full w-full flex-col bg-canvas text-ink">
+    <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-canvas text-ink">
       <TopBar slides={slides} index={index} onJump={setIndex} />
-      <main className="flex flex-1 min-h-0 flex-col">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
@@ -86,7 +86,7 @@ export function PresentationFrame({ slides }: PresentationFrameProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="flex flex-1 min-h-0 flex-col"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden"
           >
             {current.render()}
           </motion.div>
@@ -113,7 +113,7 @@ function TopBar({
   onJump: (i: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between border-b border-line px-12 py-3 text-[11px] uppercase tracking-[0.22em] text-ink-3">
+    <div className="flex shrink-0 items-center justify-between border-b border-line px-12 py-3 text-[11px] uppercase tracking-[0.22em] text-ink-3">
       <div className="flex items-center gap-3">
         <span className="inline-block size-2 rounded-full bg-ink" />
         <span className="font-medium text-ink">Subtensor governance</span>
@@ -153,7 +153,7 @@ function BottomBar({
   onJump: (i: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between border-t border-line px-12 py-3">
+    <div className="flex shrink-0 items-center justify-between border-t border-line px-12 py-3">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-3">
         <kbd className="rounded border border-line bg-soft px-1.5 py-0.5 font-sans text-[10px] text-ink-2">
           ←
