@@ -375,6 +375,7 @@ function Track1Panel({
         elapsedHours={elapsedHours}
         phase={phase}
       />
+      <DelayPressure voters={voters} phase={phase} />
 
       <div className="mt-3 grid grid-cols-[repeat(16,minmax(0,1fr))] gap-[3px]">
         {voters.map((v) => (
@@ -417,6 +418,41 @@ function Track1Panel({
         tone="reject"
       />
     </Card>
+  );
+}
+
+function DelayPressure({ voters, phase }: { voters: Voter[]; phase: Phase }) {
+  const { aye, nay, total } = tally(voters);
+  const net = aye - nay;
+  const netFrac = total === 0 ? 0 : Math.abs(net) / total;
+  const direction =
+    net > 0 ? "toward fast-track" : net < 0 ? "toward cancel" : "neutral";
+  const threshold =
+    net >= 0 ? REVIEW_FAST_TRACK_THRESHOLD : REVIEW_CANCEL_THRESHOLD;
+  const rawProgress = Math.min(1, netFrac / threshold);
+  const easedProgress = 1 - (1 - rawProgress) ** 3;
+  const activeOrReached =
+    phase === "review_ongoing" ||
+    phase === "review_fast_tracked" ||
+    phase === "review_cancelled" ||
+    phase === "review_enacted";
+
+  if (!activeOrReached) return null;
+
+  return (
+    <div className="mt-2 flex items-center justify-between border-t border-line pt-2 text-[10.5px] leading-none text-ink-3">
+      <span>
+        Net <span className="font-mono text-ink">{net > 0 ? `+${net}` : net}</span>{" "}
+        {direction}
+      </span>
+      <span>
+        threshold progress{" "}
+        <span className="font-mono text-ink">{Math.round(rawProgress * 100)}%</span>
+        <span className="mx-1 text-line">/</span>
+        eased{" "}
+        <span className="font-mono text-ink">{Math.round(easedProgress * 100)}%</span>
+      </span>
+    </div>
   );
 }
 
