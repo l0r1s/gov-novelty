@@ -40,6 +40,7 @@ export interface CollectiveSpec {
   heldBy?: string;
   min: number;
   max: number;
+  memberSummary?: string;
   termDays: number | null;
   role: string;
   tagline: string;
@@ -53,6 +54,7 @@ export const COLLECTIVES: CollectiveSpec[] = [
     heldBy: "OTF",
     min: 1,
     max: 20,
+    memberSummary: "up to 20",
     termDays: null,
     role: "Submit proposals",
     tagline: "Authorized to file proposals on the Triumvirate track.",
@@ -64,16 +66,18 @@ export const COLLECTIVES: CollectiveSpec[] = [
     label: "Triumvirate",
     min: 3,
     max: 3,
+    memberSummary: "3",
     termDays: null,
     role: "First-stage approval body",
     tagline: "Three-member committee that approves or rejects proposals.",
-    selection: "Curated. Three named seats, no automatic rotation.",
+    selection: "Curated. Three named seats, later elected via on-chain voting.",
   },
   {
     id: "Economic",
     label: "Economic",
     min: 16,
     max: 16,
+    memberSummary: "16",
     termDays: 60,
     role: "Validator-side review voter",
     tagline: "Top 16 root-registered validator coldkeys by smoothed stake value.",
@@ -85,6 +89,7 @@ export const COLLECTIVES: CollectiveSpec[] = [
     label: "Building",
     min: 16,
     max: 16,
+    memberSummary: "16",
     termDays: 60,
     role: "Builder-side review voter",
     tagline: "Top 16 subnet-owner coldkeys, weighted by their best mature subnet.",
@@ -96,6 +101,7 @@ export const COLLECTIVES: CollectiveSpec[] = [
     label: "Economic eligible",
     min: 0,
     max: 64,
+    memberSummary: "root-registered",
     termDays: null,
     role: "Staging pool",
     tagline: "Mirror of coldkeys with at least one root-registered hotkey.",
@@ -140,7 +146,7 @@ export const TRACKS: TrackSpec[] = [
       "Wider, time-bounded review. Economic and Building voters can fast-track, slow-walk, or cancel the call before it dispatches.",
     details: [
       { label: "Initial delay", value: "24 hours" },
-      { label: "Max delay", value: "48 hours" },
+      { label: "Max delay", value: "48 hours (adjustable)" },
       { label: "Fast-track at", value: "75% approval" },
       { label: "Cancel at", value: "51% rejection" },
     ],

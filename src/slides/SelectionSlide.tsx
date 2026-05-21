@@ -127,21 +127,21 @@ export function SelectionSlide() {
         />
       </div>
 
-      <footer className="mt-4 grid grid-cols-3 gap-4 border-t border-line pt-4">
+      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
         <FooterStat
-          icon={<Calendar className="h-4 w-4" />}
+          icon={<Calendar className="h-3.5 w-3.5" />}
           label="Rotation cadence"
           value="every 60 days"
           detail="At the cadence boundary, the runtime recomputes both lists."
         />
         <FooterStat
-          icon={<ListFilter className="h-4 w-4" />}
+          icon={<ListFilter className="h-3.5 w-3.5" />}
           label="Failure mode"
           value="keep previous set"
           detail="If selection returns fewer than 16 eligible accounts, the existing membership stays untouched."
         />
         <FooterStat
-          icon={<TrendingUp className="h-4 w-4" />}
+          icon={<TrendingUp className="h-3.5 w-3.5" />}
           label="Why both sides"
           value="validators + builders"
           detail="Two independently-selected pools, unioned at review time. Neither side can pass a vote alone."
@@ -245,7 +245,7 @@ function FooterStat({
           {label}
         </div>
         <div className="text-[13px] font-medium text-ink">{value}</div>
-        <p className="text-[11.5px] leading-snug text-ink-3">{detail}</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-ink-3">{detail}</p>
       </div>
     </div>
   );

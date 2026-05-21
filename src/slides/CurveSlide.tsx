@@ -256,7 +256,7 @@ export function CurveSlide() {
         </Card>
       </div>
 
-      <footer className="mt-4 grid grid-cols-3 gap-6 border-t border-line pt-4 text-[12px] leading-relaxed text-ink-3">
+      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
         <p>
           <span className="font-medium text-ink">The curve is pluggable.</span>{" "}
           The shape of the curve is a single runtime knob. Swapping linear for

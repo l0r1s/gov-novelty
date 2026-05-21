@@ -105,7 +105,7 @@ export function LifecycleSlide() {
         </div>
 
         {/* Right column: controls + timeline */}
-        <aside className="flex w-[280px] shrink-0 flex-col gap-4">
+        <aside className="flex w-[280px] shrink-0 flex-col gap-4 min-h-0">
           <Controls
             phase={state.phase}
             autoplay={autoplay}
@@ -148,9 +148,8 @@ function ProposalHeader({ phase }: { phase: Phase }) {
             <span>Proposer P01</span>
           </div>
           <div className="mt-0.5 font-mono text-[13.5px] text-ink">
-            balances.forceSetBalance(
-            <span className="text-ink-3">target</span>,{" "}
-            <span className="text-ink-3">2 TAO</span>)
+            system.setCode(
+            <span className="text-ink-3">new_runtime_blob</span>)
           </div>
         </div>
         <Badge
@@ -236,7 +235,7 @@ function Track0Panel({
         label="Approve"
         value={ayeFrac}
         threshold={TRIUMVIRATE_APPROVE_THRESHOLD}
-        thresholdLabel="2/3"
+        thresholdLabel="67%"
         tone="approve"
       />
       <div className="h-3" />
@@ -244,7 +243,7 @@ function Track0Panel({
         label="Reject"
         value={nayFrac}
         threshold={TRIUMVIRATE_REJECT_THRESHOLD}
-        thresholdLabel="2/3"
+        thresholdLabel="67%"
         tone="reject"
       />
     </Card>

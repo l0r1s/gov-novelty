@@ -221,7 +221,7 @@ export function reducer(state: SimState, action: Action): SimState {
           ev(
             "submit",
             "submitted",
-            "Proposer files balances.forceSetBalance(target, 2 TAO) on track 0",
+            "Proposer files system.setCode(new_runtime_blob) on track 0",
           ),
         ],
       };

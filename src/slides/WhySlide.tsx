@@ -16,21 +16,21 @@ export function WhySlide() {
     >
       <div className="grid flex-1 grid-cols-3 gap-5 pt-2">
         <PrincipleCard
-          icon={<Clock className="h-5 w-5" />}
+          icon={<Clock className="h-4 w-4" />}
           tag="Stage 1"
           title="Decisive."
           body="A three-member committee — the Triumvirate — votes yes or no within a fixed window. No rolling debate, no quorum-by-attrition."
           accent="ink"
         />
         <PrincipleCard
-          icon={<Eye className="h-5 w-5" />}
+          icon={<Eye className="h-4 w-4" />}
           tag="Stage 2"
           title="Checked."
           body="If approved, the call doesn't fire immediately. It enters a Review window where a wider, automatically-selected assembly can fast-track, slow it down, or cancel it outright."
           accent="focus"
         />
         <PrincipleCard
-          icon={<CheckCircle2 className="h-5 w-5" />}
+          icon={<CheckCircle2 className="h-4 w-4" />}
           tag="Always"
           title="Predictable."
           body="Voter sets, thresholds, delays, and execution all live on-chain. No multisig key holders. No off-chain timelock. No discretion at dispatch."
@@ -40,9 +40,7 @@ export function WhySlide() {
 
       <footer className="mt-6 border-t border-line pt-5">
         <p className="max-w-3xl text-[13px] leading-relaxed text-ink-3">
-          <span className="font-medium text-ink">Inspired by</span>{" "}
-          Polkadot's OpenGov, but reduced and re-shaped. Two tracks instead of
-          fifteen. A small committee for speed, plus a broad assembly for
+          Two tracks instead of fifteen. A small committee for speed, plus a broad assembly for
           legitimacy. No conviction voting; no delegated nominators.
         </p>
       </footer>
@@ -71,10 +69,10 @@ function PrincipleCard({
         : "bg-approve";
   return (
     <Card className="relative overflow-hidden">
-      <div className={`absolute inset-x-0 top-0 h-[3px] ${accentLine}`} />
+      <div className={`absolute inset-x-0 top-0 h-1 ${accentLine}`} />
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="rounded-md border border-line bg-soft p-2 text-ink-2">
+          <div className="rounded border border-line bg-soft p-2 text-ink-2">
             {icon}
           </div>
           <span className="text-[10px] uppercase tracking-[0.22em] text-ink-3">

@@ -75,7 +75,7 @@ export function ExtensionsSlide() {
         ))}
       </div>
 
-      <footer className="mt-5 flex items-center justify-between border-t border-line pt-5 text-[12px] leading-relaxed text-ink-3">
+      <footer className="mt-6 flex items-center justify-between border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
         <p className="max-w-3xl">
           <span className="font-medium text-ink">The shape is the API.</span>{" "}
           A track is a name plus a proposer set, a voter set, and a decision

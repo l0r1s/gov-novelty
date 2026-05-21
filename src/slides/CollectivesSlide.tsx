@@ -124,9 +124,8 @@ function CollectiveCard({ spec }: { spec: CollectiveSpec }) {
         </div>
       </CardHeader>
       <CardContent className="flex-1 space-y-3 pt-0">
-        <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <Stat label="Min" value={spec.min} />
-          <Stat label="Max" value={spec.max} />
+        <div className="flex gap-2 text-[11px]">
+          <Stat label="Members" value={spec.memberSummary || `${spec.max}`} />
         </div>
         <p className="text-[12.5px] leading-relaxed text-ink-2">{spec.tagline}</p>
         <p className="text-[11.5px] leading-snug text-ink-3">{spec.selection}</p>
@@ -135,7 +134,7 @@ function CollectiveCard({ spec }: { spec: CollectiveSpec }) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded border border-line bg-soft px-2 py-1.5">
       <div className="text-[10px] uppercase tracking-[0.18em] text-ink-3">

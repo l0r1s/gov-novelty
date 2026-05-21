@@ -18,15 +18,19 @@ export function TracksSlide() {
       }
       subtitle="Every proposal enters through Track 0. Approval there is the only way to reach Track 1. There is no other on-chain entry point into the review delay."
     >
-      <div className="relative grid flex-1 grid-cols-[1fr_auto_1fr] gap-6 pt-1">
-        <TrackCard track={TRACKS[0]} side="left" />
+      <div className="relative flex flex-1 min-h-0 items-stretch gap-6 pt-1">
+        <div className="flex flex-1 flex-col min-w-0">
+          <TrackCard track={TRACKS[0]} side="left" />
+        </div>
         <div className="flex flex-col items-center justify-center gap-3 pt-2">
           <ApprovalArrow />
         </div>
-        <TrackCard track={TRACKS[1]} side="right" />
+        <div className="flex flex-1 flex-col min-w-0">
+          <TrackCard track={TRACKS[1]} side="right" />
+        </div>
       </div>
 
-      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[12.5px] leading-relaxed text-ink-3">
+      <footer className="mt-6 grid grid-cols-3 gap-6 border-t border-line pt-5 text-[13px] leading-relaxed text-ink-3">
         <Note
           icon={<Lock className="h-3.5 w-3.5" />}
           title="No back door"
@@ -52,7 +56,7 @@ function TrackCard({ track, side }: { track: TrackSpec; side: "left" | "right" }
   return (
     <Card
       className={cn(
-        "relative overflow-hidden",
+        "relative flex h-full flex-col overflow-hidden",
         isStage0 ? "border-ink" : "border-focus-line",
       )}
     >
@@ -76,7 +80,7 @@ function TrackCard({ track, side }: { track: TrackSpec; side: "left" | "right" }
             <h3 className="mt-2 text-[22px] font-semibold tracking-tight">
               {track.name}
             </h3>
-            <p className="mt-1 text-[12.5px] leading-relaxed text-ink-3">
+            <p className="mt-1 min-h-[40px] text-[12.5px] leading-relaxed text-ink-3">
               {track.description}
             </p>
           </div>
